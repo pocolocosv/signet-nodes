@@ -1,0 +1,34 @@
+version: '3.9'
+services:
+  bitcoind:
+    image: lncm/bitcoind:v25.0
+    volumes:
+      - ./data/bitcoin:/data/.bitcoin
+      - ./config/bitcoin.conf:/data/.bitcoin/bitcoin.conf
+    expose:
+      - 38333
+      - 38332
+
+  tor:
+    image: osminogin/tor-simple
+    volumes:
+      - ./config/torrc:/etc/tor/torrc
+    expose:
+      - 9050
+      - 9051
+
+  lnd:
+    image: lightninglabs/lnd:v0.16.4-beta
+    volumes:
+      - ./data/lnd:/root/.lnd
+      - ./config/lnd.conf:/root/.lnd/lnd.conf
+    expose:
+      - 9735  # Lightning Network port
+      - 10009  # gRPC port
+      - 8080  # REST RPC port
+    links:
+      - bitcoind
+      - tor
+    depends_on:
+      - bitcoind
+      - tor
