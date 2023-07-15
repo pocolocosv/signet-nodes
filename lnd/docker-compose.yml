@@ -16,19 +16,30 @@ services:
     expose:
       - 9050
       - 9051
+    ports:
+      - 9051:9051  # gRPC port
+
 
   lnd:
     image: lightninglabs/lnd:v0.16.4-beta
     volumes:
       - ./data/lnd:/root/.lnd
       - ./config/lnd.conf:/root/.lnd/lnd.conf
+    #command:
+      #- --restlisten=0.0.0.0:8080
     expose:
       - 9735  # Lightning Network port
       - 10009  # gRPC port
       - 8080  # REST RPC port
+
+    ports:
+      - 10009:10009
+      - 8080:8080  # REST RPC port
+
     links:
       - bitcoind
       - tor
     depends_on:
       - bitcoind
       - tor
+
